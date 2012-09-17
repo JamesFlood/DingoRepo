@@ -15,21 +15,38 @@ public class CalculatePower {
 	private static int NW = 7;
 	private static int FLAT = 8;
 	
+	private static Double EFFICIENCY_LOSS_PER_YEAR = 0.007;
+	private static Double EFFICIENCY_LOSS_FROM_INVERTER = 0.96;
+	
 	//Average Daily Solar Generation = (System Size * 
 	//Efficiency Loss from Roof, Age, Inverter) *  
 	//Average Hours of Sunlight
 	
 	public static double calculate(House house){
 		
+		Double roofPower[] = new Double[house.numberOfRoofs()];
+		Double totalPower = 0.0;
 		
+		for (int i = 0; i < house.numberOfRoofs(); i++){
+			
+			roofPower[i] = (house.getRoof(i).getSizeOfCurrentPanels() * roofEfficiency(house.getRoof(i))) * 10 ;
+			totalPower = totalPower + roofPower[i];
+		}
 		
+		return totalPower;
+	}
+	
+	public static double roofEfficiency(Roof roof){
 		
-		return 300;
+		Double efficiency = efficiencyDirection(roof.getDirection(), roof.getAngle()) * 
+				(1 - (roof.getAgeOfCurrentPanels() * EFFICIENCY_LOSS_PER_YEAR)) * EFFICIENCY_LOSS_FROM_INVERTER;
+		
+		return efficiency;
 	}
 	
 	public static double efficiencyDirection(int direction, double angle){
 		
-		double efficiency;
+		double efficiency = 0;
 		
 		if (direction == NORTH){
 			
@@ -150,7 +167,7 @@ public class CalculatePower {
 			efficiency = 0.85;
 		}
 		
-		return 0.8;
+		return efficiency;
 	}
 	
 	
